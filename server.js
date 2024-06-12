@@ -85,7 +85,26 @@ app.get('/computadoras/search', async (req, res) => {
     }
 });
 
-// POST
+//METODO POST
+app.post("/computadoras", async (req, res) => {
+    const nuevoProducto = req.body
+      if (nuevoProducto === undefined || nuevoProducto === null) {
+          res.status(400).send('Error de formato de los datos.')
+      }
+      const client = await connectToMongoDB();
+      if (!client) {
+          res.status(500).send('Error al conectarse a MongoDB')
+          return;
+      }
+      const db = client.db('elementos') 
+      const collection = await db.collection('computadoras').insertOne(nuevoProducto)
+          .then(() => {
+              console.log('Nuevo producto agregado')
+              res.status(201).send(nuevoProducto)
+          }).catch(err => { 
+              console.error(err)
+          }).finally(async() => {await disconnectToMongoDB() })
+  });
 
 // PUT
 
