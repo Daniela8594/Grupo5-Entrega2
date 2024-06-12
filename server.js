@@ -36,20 +36,18 @@ app.get('/computadoras', async (req, res) => {
 })
 
 //METODO GET PARA OBTENER UNA COMPUTADORA POR SU ID
-app.get('/computadoras/:id', async (req, res) => {
+app.get("/computadoras/codigo/:id", async (req, res) => {
     const computadoraID = parseInt(req.params.id) || 0
-
     const client = await connectToMongoDB();
     if (!client) {
         res.status(500).send('Error al conectarse a MongoDB')
         return;
     }
-
     const db = client.db('elementos')
-    const computadoras = await db.collection('computadoras').findOne({ id: (computadoraID) })
+    const computadoras = await db.collection('computadoras').findOne({ codigo: computadoraID})
     await disconnectToMongoDB()
-    !computadoras ? res.status(404).send('No encontré el elemento con el ID ' + computadoraID) : res.status(200).json(computadoras)
-});
+    !computadoras ? res.status(404).send('No se encuentra el producto con id '+ computadoraID): res.status(200).json(computadoras)
+  });
 
 //METODO GET PARA BUSCAR COMPUTADORAS POR NOMBRE O DESCRIPCIÓN
 app.get('/computadoras/search', async (req, res) => {
@@ -103,3 +101,4 @@ app.get("*", (req, res) => {
 
 //INICIA EL SERVIDOR
 app.listen(PORT, () => console.log(`API de computadoras escuchando en http://localhost:${PORT}`));
+
