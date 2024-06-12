@@ -4,12 +4,12 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 //INCLUYO FUNCIONES DECLARADAS DESDE MONGODB.JS
-const {connectToMongoDB, disconnectToMongoDB} = require('./src/mongoDb')
+const { connectToMongoDB, disconnectToMongoDB } = require('./src/mongoDb')
 
 //BODY-PARSER
 const bodyParser = require('body-parser');
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // MIDDLEWARE
 app.use((req, res, next) => {
@@ -19,46 +19,82 @@ app.use((req, res, next) => {
 
 //RUTA RAIZ
 app.get('/', (req, res) => {
-    res.status(200).end("Bienvenido a mi API de PELICULAS-GRUPO 5");
+    res.status(200).end("Bienvenido a mi API de COMPUTADORAS-GRUPO 5");
 });
 
-//METODO GET PARA OBTENER TODOS LOS ELEMENTOS DE LA DB
-app.get('/trailerflix', async (req, res) => {
+//METODO GET PARA OBTENER TODAS LAS COMPUTADORAS DE LA DB
+app.get('/computadoras', async (req, res) => {
     const client = await connectToMongoDB();
-    if(!client) {
+    if (!client) {
         res.status(500).send('Error al conectarse a MongoDB')
         return;
     }
-    const db = client.db('peliculas')
-    const trailerflix = await db.collection('trailerflix').find().toArray()
+    const db = client.db('elementos')
+    const computadoras = await db.collection('computadoras').find().toArray()
     await disconnectToMongoDB()
-    res.status(200).json(trailerflix);
+    res.status(200).json(computadoras);
 })
 
-//METODO GET PARA OBTENER UN DOCUMENTO POR SU ID
-app.get('/trailerflix/:id', async (req, res) => {
-    const trailerflixID = parseInt(req.params.id) || 0
+//METODO GET PARA OBTENER UNA COMPUTADORA POR SU ID
+app.get('/computadoras/:id', async (req, res) => {
+    const computadoraID = parseInt(req.params.id) || 0
 
     const client = await connectToMongoDB();
-    if(!client) {
+    if (!client) {
         res.status(500).send('Error al conectarse a MongoDB')
         return;
     }
 
-    const db = client.db('peliculas')
-    const trailerflix = await db.collection('trailerflix').findOne({id: trailerflixID})
+    const db = client.db('elementos')
+    const computadoras = await db.collection('computadoras').findOne({ id: (computadoraID) })
     await disconnectToMongoDB()
-    !trailerflix ? res.status(404).send('No encontre la pelicula o serie con el ID '+ trailerflixID): res.status(200).json(trailerflix)
+    !computadoras ? res.status(404).send('No encontré el elemento con el ID ' + computadoraID) : res.status(200).json(computadoras)
 });
 
-// POST 
+//METODO GET PARA BUSCAR COMPUTADORAS POR NOMBRE O DESCRIPCIÓN
+app.get('/computadoras/search', async (req, res) => {
+    const { nombre, descripcion } = req.query;
+
+    if (!nombre && !descripcion) { // Verifica si al menos uno de los parámetros está presente
+        return res.status(500).send('Por favor, proporciona al menos un término de búsqueda.');
+    }
+
+    const client = await connectToMongoDB();
+    if (!client) {
+        res.status(500).send('Error al conectarse a MongoDB')
+        return;
+    }
+    const db = client.db('elementos');
+    try {
+        // Construye la consulta para buscar computadoras por nombre o descripción
+        const query = {};
+        if (nombre) {
+            query.nombre = { $regex: new RegExp(nombre, 'i') }; // Búsqueda insensible a mayúsculas y minúsculas
+        }
+        if (descripcion) {
+            query.descripcion = { $regex: new RegExp(descripcion, 'i') }; // Búsqueda insensible a mayúsculas y minúsculas
+        }
+
+        // Ejecuta la consulta en la base de datos
+        const computadoras = await db.collection('computadoras').find(query).toArray();
+
+        res.status(200).json(computadoras);
+    } catch (error) {
+        console.error('Error al buscar computadoras:', error);
+        res.status(500).send('Error al buscar computadoras en la base de datos');
+    } finally {
+        await disconnectToMongoDB();
+    }
+});
+
+// POST
 
 // PUT
 
 // DELETE
 
 // RUTA PREDETERMINADA PARA MANEJAR RUTAS INEXISTENTES
-app.get("*",(req, res) => {
+app.get("*", (req, res) => {
     res.json({
         error: "404",
         message: "No se encuentra la ruta solicitada",
@@ -66,4 +102,4 @@ app.get("*",(req, res) => {
 });
 
 //INICIA EL SERVIDOR
-app.listen(PORT, () => console.log(`API de peliculas escuchando en http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`API de computadoras escuchando en http://localhost:${PORT}`));
