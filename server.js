@@ -109,6 +109,46 @@ app.post("/computadoras", async (req, res) => {
 // PUT
 
 // DELETE
+app.delete("/computadoras/:codigo", async (req, res) => {
+    
+    const codigo = req.params.codigo;
+     
+    const client = await connectToMongoDB();
+    if (!client) {
+        res.status(500).send('Error al conectarse a MongoDB')
+        return;
+    }
+    
+    const db = client.db('elementos') 
+    const collection = await db.collection('computadoras')
+
+    collection.deleteOne({codigo: parseInt(codigo)})
+   
+    
+    .then((result)=>{
+        
+            if (result.deletedCount === 0){
+                if (isNaN(parseInt(codigo))){
+                    console.log('Formato invalido')
+                    res.status(400).send('El formato no es válido');
+                    return;
+                }else{
+                    console.log('No existe');
+                    res.status(404).send('No se encontro la computadora con el codigo: '+codigo);
+                    return
+                }}
+            else{
+            console.log('Computadora eliminada');
+            res.status(204).send('Computadora eliminada');
+            }}
+    )
+    .catch((error)=>{
+        console.error(error);
+        res.status(500).send('Se produjo un error al intentar eliminar');
+    })
+  
+    .finally(async() => {await disconnectToMongoDB()});
+});
 
 // RUTA PREDETERMINADA PARA MANEJAR RUTAS INEXISTENTES
 app.get("*", (req, res) => {
