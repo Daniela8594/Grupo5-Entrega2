@@ -44,11 +44,12 @@ app.get("/computadoras/codigo/:id", async (req, res) => {
         return;
     }
     const db = client.db('elementos')
-    const computadoras = await db.collection('computadoras').findOne({ codigo: computadoraID})
+    const computadoras = await db.collection('computadoras').findOne({ codigo: computadoraID })
     await disconnectToMongoDB()
-    !computadoras ? res.status(404).send('No se encuentra el producto con id '+ computadoraID): res.status(200).json(computadoras)
-  });
+    !computadoras ? res.status(404).send('No se encuentra el producto con id ' + computadoraID) : res.status(200).json(computadoras)
+});
 
+/*
 //METODO GET PARA BUSCAR COMPUTADORAS POR NOMBRE O DESCRIPCIÓN
 app.get('/computadoras/search', async (req, res) => {
     const { nombre, descripcion } = req.query;
@@ -88,66 +89,154 @@ app.get('/computadoras/search', async (req, res) => {
 //METODO POST
 app.post("/computadoras", async (req, res) => {
     const nuevoProducto = req.body
-      if (nuevoProducto === undefined || nuevoProducto === null) {
-          res.status(400).send('Error de formato de los datos.')
-      }
-      const client = await connectToMongoDB();
-      if (!client) {
-          res.status(500).send('Error al conectarse a MongoDB')
-          return;
-      }
-      const db = client.db('elementos') 
-      const collection = await db.collection('computadoras').insertOne(nuevoProducto)
-          .then(() => {
-              console.log('Nuevo producto agregado')
-              res.status(201).send(nuevoProducto)
-          }).catch(err => { 
-              console.error(err)
-          }).finally(async() => {await disconnectToMongoDB() })
-  });
-
-// PUT
-
-// DELETE
-app.delete("/computadoras/:codigo", async (req, res) => {
-    
-    const codigo = req.params.codigo;
-     
+    if (nuevoProducto === undefined || nuevoProducto === null) {
+        res.status(400).send('Error de formato de los datos.')
+    }
     const client = await connectToMongoDB();
     if (!client) {
         res.status(500).send('Error al conectarse a MongoDB')
         return;
     }
-    
-    const db = client.db('elementos') 
+    const db = client.db('elementos')
+    const collection = await db.collection('computadoras').insertOne(nuevoProducto)
+        .then(() => {
+            console.log('Nuevo producto agregado')
+            res.status(201).send(nuevoProducto)
+        }).catch(err => {
+            console.error(err)
+        }).finally(async () => { await disconnectToMongoDB() })
+});
+*/
+
+//METODO GET PARA BUSCAR COMPUTADORAS POR NOMBRE O DESCRIPCIÓN
+app.get('/computadoras/search/:key', async (req, res) => {
+    try {
+        const client = await connectToMongoDB();
+        const db = client.db('elementos');
+        const computadorasCollection = db.collection('computadoras');
+
+        const searchTerm = req.params.key;
+        const data = await computadorasCollection.find({
+            $or: [
+                { nombre: { $regex: searchTerm, $options: 'i' } },
+                { categoria: { $regex: searchTerm, $options: 'i' } }
+            ]
+        }).toArray();
+
+        await disconnectToMongoDB();
+
+        if (data.length === 0) {
+            res.status(404).send(`No se encontraron resultados para '${searchTerm}'`);
+        } else {
+            res.status(200).json(data);
+        }
+    } catch (error) {
+        console.error('Error al buscar computadoras por nombre o descripción:', error);
+        res.status(500).send('Error interno al buscar computadoras');
+    }
+});
+
+//POST
+app.post("/computadoras/:codigo", async (req, res) => {
+    const newComputer = req.body;
+
+    try {
+        const client = await connectToMongoDB();
+        if (!client) {
+            return res.status(500).send('Error al conectarse a MongoDB');
+        }
+
+        const db = client.db('elementos');
+        const collection = db.collection('computadoras');
+
+        //Insertar la nueva computadora en la base de datos
+        await collection.insertOne(newComputer)
+        console.log('Nueva computadora agregada:', newComputer);
+        await disconnectToMongoDB();
+        res.status(201).send('Computadora agregada correctamente');
+    } catch (error) {
+        console.error('Error al agregar computadora:', error);
+        res.status(500).send('Error interno al agregar computadora');
+    }
+});
+
+// PUT
+app.put('/computadoras/:codigo', async (req, res) => {
+    const codigo = req.params.codigo;
+    const updatedComputer = req.body;
+
+    try {
+        const client = await connectToMongoDB();
+        if (!client) {
+            return res.status(500).send('Error al conectarse a MongoDB');
+        }
+
+        const db = client.db('elementos');
+        const collection = db.collection('computadoras');
+
+        const filter = { codigo: parseInt(codigo) };
+        const updateDoc = {
+        //actualizo con set
+            $set: updatedComputer
+        };
+
+        const result = await collection.updateOne(filter, updateDoc);
+
+        if (result.matchedCount === 0) {
+            res.status(404).send(`No se encontró la computadora con código ${codigo}`);
+        } else {
+            res.status(200).send(`Computadora con código ${codigo} actualizada correctamente`);
+        }
+
+        await disconnectToMongoDB();
+    } catch (error) {
+        console.error('Error al actualizar computadora:', error);
+        res.status(500).send('Error interno al actualizar computadora');
+    }
+});
+
+// DELETE
+app.delete("/computadoras/:codigo", async (req, res) => {
+
+    const codigo = req.params.codigo;
+
+    const client = await connectToMongoDB();
+    if (!client) {
+        res.status(500).send('Error al conectarse a MongoDB')
+        return;
+    }
+
+    const db = client.db('elementos')
     const collection = await db.collection('computadoras')
 
-    collection.deleteOne({codigo: parseInt(codigo)})
-   
-    
-    .then((result)=>{
-        
-            if (result.deletedCount === 0){
-                if (isNaN(parseInt(codigo))){
+    collection.deleteOne({ codigo: parseInt(codigo) })
+
+
+        .then((result) => {
+
+            if (result.deletedCount === 0) {
+                if (isNaN(parseInt(codigo))) {
                     console.log('Formato invalido')
                     res.status(400).send('El formato no es válido');
                     return;
-                }else{
+                } else {
                     console.log('No existe');
-                    res.status(404).send('No se encontro la computadora con el codigo: '+codigo);
+                    res.status(404).send('No se encontro la computadora con el codigo: ' + codigo);
                     return
-                }}
-            else{
-            console.log('Computadora eliminada');
-            res.status(204).send('Computadora eliminada');
-            }}
-    )
-    .catch((error)=>{
-        console.error(error);
-        res.status(500).send('Se produjo un error al intentar eliminar');
-    })
-  
-    .finally(async() => {await disconnectToMongoDB()});
+                }
+            }
+            else {
+                console.log('Computadora eliminada');
+                res.status(204).send('Computadora eliminada');
+            }
+        }
+        )
+        .catch((error) => {
+            console.error(error);
+            res.status(500).send('Se produjo un error al intentar eliminar');
+        })
+
+        .finally(async () => { await disconnectToMongoDB() });
 });
 
 // RUTA PREDETERMINADA PARA MANEJAR RUTAS INEXISTENTES
