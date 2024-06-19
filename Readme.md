@@ -75,4 +75,4 @@ npm run dev
 
 7. Muestra cuando elimina el producto de la base de datos.
    
-   ![](/src/views/7.%20metodo%20delete%20elimina%20producto.png)
+  ![](/src/views/7.%20metodo%20delete%20elimina%20producto.png)
