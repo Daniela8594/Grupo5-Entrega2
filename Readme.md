@@ -38,7 +38,7 @@ npm run dev
 
 | Método | Endpoint | Descripción |
 |----------|----------|----------|
-| GET    | [/](http://localhost:3000)   | Solo devuelve un mensaje de bienvenida. |
+| GET    | [/](http://localhost:3000)   | Ruta raiz, solo devuelve un mensaje de bienvenida. |
 | GET    | [/computadoras](http://localhost:3000/computadoras)   | Primeramente conecta con MongoDB. Luego por medio del método find() interactúa con MongoDB, realiza la búsqueda en nuestra base de datos desde nuestra colección ya cargada previamente, una vez que obtiene los elementos encontrados, se desconecta MongoDB y a través del método toArray() nos muestra por pantalla como resultado la lista array en modo json de las computadoras. |
 | GET    |  [/computadoras/:codigo](http://localhost:3000/computadoras/codigo/4)  | Esta ruta es para obtener un producto mediante el codigo que solicitemos   |
 | GET    |  [/computadoras/:search/:key](http://localhost:3000/computadoras/search/moni)  | Esta ruta es para buscar productos por su nombre o descripcion.  |
