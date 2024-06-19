@@ -68,3 +68,11 @@ npm run dev
 5.  Muestra cuando se agrega una nueva computadora.
 
    ![](/src/views/5.%20metodo%20post.%20agrega%20nueva%20computadora.png)
+
+6.  Muestra cuando se actualiza un nuevo producto.
+
+   ![](/src/views/6.%20metodo%20put%20actualiza%20producto.png)
+
+7. Muestra cuando elimina el producto de la base de datos.
+   
+   ![](/src/views/7.%20metodo%20delete%20elimina%20producto.png)
