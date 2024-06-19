@@ -49,65 +49,6 @@ app.get("/computadoras/codigo/:id", async (req, res) => {
     !computadoras ? res.status(404).send('No se encuentra el producto con id ' + computadoraID) : res.status(200).json(computadoras)
 });
 
-/*
-//METODO GET PARA BUSCAR COMPUTADORAS POR NOMBRE O DESCRIPCIÓN
-app.get('/computadoras/search', async (req, res) => {
-    const { nombre, descripcion } = req.query;
-
-    if (!nombre && !descripcion) { // Verifica si al menos uno de los parámetros está presente
-        return res.status(500).send('Por favor, proporciona al menos un término de búsqueda.');
-    }
-
-    const client = await connectToMongoDB();
-    if (!client) {
-        res.status(500).send('Error al conectarse a MongoDB')
-        return;
-    }
-    const db = client.db('elementos');
-    try {
-        // Construye la consulta para buscar computadoras por nombre o descripción
-        const query = {};
-        if (nombre) {
-            query.nombre = { $regex: new RegExp(nombre, 'i') }; // Búsqueda insensible a mayúsculas y minúsculas
-        }
-        if (descripcion) {
-            query.descripcion = { $regex: new RegExp(descripcion, 'i') }; // Búsqueda insensible a mayúsculas y minúsculas
-        }
-
-        // Ejecuta la consulta en la base de datos
-        const computadoras = await db.collection('computadoras').find(query).toArray();
-
-        res.status(200).json(computadoras);
-    } catch (error) {
-        console.error('Error al buscar computadoras:', error);
-        res.status(500).send('Error al buscar computadoras en la base de datos');
-    } finally {
-        await disconnectToMongoDB();
-    }
-});
-
-//METODO POST
-app.post("/computadoras", async (req, res) => {
-    const nuevoProducto = req.body
-    if (nuevoProducto === undefined || nuevoProducto === null) {
-        res.status(400).send('Error de formato de los datos.')
-    }
-    const client = await connectToMongoDB();
-    if (!client) {
-        res.status(500).send('Error al conectarse a MongoDB')
-        return;
-    }
-    const db = client.db('elementos')
-    const collection = await db.collection('computadoras').insertOne(nuevoProducto)
-        .then(() => {
-            console.log('Nuevo producto agregado')
-            res.status(201).send(nuevoProducto)
-        }).catch(err => {
-            console.error(err)
-        }).finally(async () => { await disconnectToMongoDB() })
-});
-*/
-
 //METODO GET PARA BUSCAR COMPUTADORAS POR NOMBRE O DESCRIPCIÓN
 app.get('/computadoras/search/:key', async (req, res) => {
     try {

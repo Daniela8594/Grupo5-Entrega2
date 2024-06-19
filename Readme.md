@@ -1,6 +1,17 @@
 >  # Nuestra API de Computadoras
+1. Comenzamos instalando las dependencias para el correcto funcionamiento de nuestra API de computadoras.
+``` 
+npm install express
+            dotenv
+            body-parser
+            mongoDB
+```               
 
+2. Ejecutamos la aplicacion mediante el comando
 
+``` 
+npm run dev 
+```
 
 
 ## Organización de los pasos Realizados:
@@ -13,7 +24,7 @@
     - URL: /computadoras/:codigo
     - URL: /computadoras/:search
   - [x] MÉTODO POST:
-    - URL: /computadoras
+    - URL: /computadoras/:codigo
   - [x] MÉTODO PUT:
     - URL: /computadoras/codigo
   - [x] MÉTODO DELETE:
@@ -28,11 +39,11 @@
 | Método | Endpoint | Descripción |
 |----------|----------|----------|
 | GET    | [/computadoras](http://localhost:3000/computadoras)   | Primeramente conecta con MongoDB. Luego por medio del método find() interactúa con MongoDB, realiza la búsqueda en nuestra base de datos desde nuestra colección ya cargada previamente, una vez que obtiene los elementos encontrados, se desconecta MongoDB y a través del método toArray() nos muestra por pantalla como resultado la lista array en modo json de las computadoras. |
-| GET    |  [/computadoras/:codigo](http://localhost:3000/computadoras/codigo/4)  | describir   |
-| GET    |  [/computadoras/:search](http://localhost:3000/computadoras/search/moni)  | describir   |
-| POST    |   [/computadoras](https://www.../) | describir   |
-| PUT    |   [/computadoras/:codigo](https://www.../) | describir   |
-| DELETE    |  [/computadoras/:codigo](https://www.../)  | describir   |
+| GET    |  [/computadoras/:codigo](http://localhost:3000/computadoras/codigo/4)  | Esta ruta es para obtener un producto mediante el codigo que solicitemos   |
+| GET    |  [/computadoras/:search/:key](http://localhost:3000/computadoras/search/moni)  | Esta ruta es para buscar productos por su nombre o descripcion.  |
+| POST    |   [/computadoras/:codigo](https://www.../) | Ruta para agregar un producto a nuestra base de datos mediante un codigo.   |
+| PUT    |   [/computadoras/:codigo](https://www.../) | Ruta para actualizar el producto seleccionado de la base de datos con los datos nuevos que se escriban en el body.  |
+| DELETE    |  [/computadoras/:codigo](https://www.../)  | Mediante esta ruta se borra el producto designado de la base de datos por medio de el codigo que proporcionemos.  |
 
 
 ## Pasos visuales de los endpoints.
