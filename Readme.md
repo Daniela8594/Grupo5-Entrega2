@@ -4,7 +4,7 @@
 npm install express
             dotenv
             body-parser
-            mongoDB
+            mongodb
 ```               
 
 2. Ejecutamos la aplicacion mediante el comando
@@ -75,4 +75,4 @@ npm run dev
 
 7. Muestra cuando elimina el producto de la base de datos.
    
-  ![]()
+  ![](/src/views/7.metodo%20delete%20elimina%20producto.png)
