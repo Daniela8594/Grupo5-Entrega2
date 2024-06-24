@@ -76,3 +76,14 @@ npm run dev
 7. Muestra cuando elimina el producto de la base de datos.
    
   ![](/src/views/7.metodo%20delete%20elimina%20producto.png)
+
+  ## Integrantes del equipo:
+  ```
+  Natalia Cisnero
+  
+  Estefania Vago
+
+  Daniela Escobar
+  
+  Yanina Lujan Velazquez
+  ```
