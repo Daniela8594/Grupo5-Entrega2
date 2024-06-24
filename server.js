@@ -163,15 +163,13 @@ app.delete("/computadoras/:codigo", async (req, res) => {
                 } else {
                     console.log('No existe');
                     res.status(404).send('No se encontro la computadora con el codigo: ' + codigo);
-                    return
+                    return;
                 }
-            }
-            else {
-                console.log('Computadora eliminada');
-                res.status(204).send('Computadora eliminada');
-            }
-        }
-        )
+            }else{
+                    console.log('Computadora eliminada')
+                    res.status(200).send('Se elimino correctamente la computadora')
+                    return;
+        }})
         .catch((error) => {
             console.error(error);
             res.status(500).send('Se produjo un error al intentar eliminar');
